@@ -16,8 +16,8 @@ public class OI {
   public static Button trigger;
 
   public OI() {
-    leftJoystick = new Joystick(Constants.OI.LEFT_STICK_PORT);
-    rightJoystick = new Joystick(Constants.OI.RIGHT_STICK_PORT);
+    leftJoystick = new Joystick(C.OI.LEFT_STICK_PORT);
+    rightJoystick = new Joystick(C.OI.RIGHT_STICK_PORT);
     trigger = new JoystickButton(rightJoystick, 1);
     trigger.whenPressed(new ResetGyro());
   }

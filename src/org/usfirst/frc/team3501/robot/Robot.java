@@ -1,10 +1,9 @@
 package org.usfirst.frc.team3501.robot;
 
-import org.usfirst.frc.team3501.robot.commands.TurnForAngle;
-import org.usfirst.frc.team3501.robot.subsystems.PIDDriveTrain;
+import org.usfirst.frc.team3501.robot.commands.DriveStraight;
+import org.usfirst.frc.team3501.robot.subsystems.Drive;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
@@ -17,10 +16,8 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  */
 public class Robot extends IterativeRobot {
 
-  public static PIDDriveTrain driveTrain;
+  public static Drive driveTrain;
   public static OI oi;
-  public static Preferences prefs;
-  public static LiveWindow lw;
   int count = 0;
 
   /**
@@ -30,19 +27,7 @@ public class Robot extends IterativeRobot {
   @Override
   public void robotInit() {
     oi = new OI();
-    prefs = Preferences.getInstance();
-    driveTrain = new PIDDriveTrain();
-
-    if (prefs == null)
-      System.out.println("Preferences not initialized");
-    else
-      System.out.println("Preferences initialized");
-    System.out.println("Current prefs values: ");
-    System.out.println("P: " + prefs.getDouble("kP", 0));
-    System.out.println("I: " + prefs.getDouble("kI", 0));
-    System.out.println("D: " + prefs.getDouble("kD", 0));
-
-    lw = new LiveWindow();
+    driveTrain = Drive.getInstance();
 
   }
 
@@ -61,24 +46,13 @@ public class Robot extends IterativeRobot {
     Scheduler.getInstance().run();
   }
 
-  /**
-   * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes
-   * using the dashboard. The sendable chooser code works with the Java
-   * SmartDashboard. If you prefer the LabVIEW
-   * Dashboard, remove all of the chooser code and uncomment the getString code
-   * to get the auto name from the text box
-   * below the Gyro
-   *
-   * You can add additional auto modes by adding additional commands to the
-   * chooser code above (like the commented example)
-   * or additional comparisons to the switch structure below with additional
-   * strings & commands.
-   */
   @Override
   public void autonomousInit() {
-    Scheduler.getInstance().add(new TurnForAngle(40, 10));
-
+    // Scheduler.getInstance().add(new DriveDistance(50, 10));
+    // System.out.println(this.driveTrain.getRightDistance());
+    Scheduler.getInstance().add(new DriveStraight(100, 10));
+    // Scheduler.getInstance().add(
+    // new TurnForAngle(-(360 + this.driveTrain.getAngle()), 6));
   }
 
   /**
@@ -87,13 +61,14 @@ public class Robot extends IterativeRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
-    count++;
+    // System.out.println(this.driveTrain.getAngle());
+    System.out.println("l:" + this.driveTrain.getLeftDistance() + " r:"
+        + this.driveTrain.getRightDistance());
 
   }
 
   @Override
   public void teleopInit() {
-    // new JoystickDrive().start();
   }
 
   /**
@@ -102,7 +77,7 @@ public class Robot extends IterativeRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    // driveTrain.printGyroOutput();
+    // System.out.println("Angle: " + driveTrain.getAngle());
 
   }
 

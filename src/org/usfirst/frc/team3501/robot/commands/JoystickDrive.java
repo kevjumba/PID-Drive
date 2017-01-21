@@ -22,10 +22,9 @@ public class JoystickDrive extends Command {
   @Override
   protected void execute() {
     // IDK why but the joystick gives positive values for pulling backwards
-    double left = -Robot.oi.leftJoystick.getY();
-    double right = -Robot.oi.rightJoystick.getY();
-    System.out.println(left + " " + right);
-    Robot.driveTrain.drive(left, right);
+    double left = -Robot.oi.rightJoystick.getY();
+    double twist = -Robot.oi.rightJoystick.getTwist();
+    Robot.driveTrain.arcadeDrive(left, twist);
   }
 
   @Override

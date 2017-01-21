@@ -1,7 +1,8 @@
 package org.usfirst.frc.team3501.robot.commands;
 
-import org.usfirst.frc.team3501.robot.Constants;
+import org.usfirst.frc.team3501.robot.C;
 import org.usfirst.frc.team3501.robot.Robot;
+import org.usfirst.frc.team3501.robot.subsystems.DriveTrain;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -21,11 +22,14 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class DriveDistance extends Command {
   private double maxTimeOut;
+  private DriveTrain drive;
   double distance;
   int count = 0;
 
   public DriveDistance(double distance, double maxTimeOut) {
     requires(Robot.driveTrain);
+    drive = DriveTrain.getInstance();
+    drive.setEncoderPID();
     this.maxTimeOut = maxTimeOut;
     this.distance = distance;
   }
@@ -37,17 +41,16 @@ public class DriveDistance extends Command {
 
   @Override
   protected void execute() {
-    Robot.driveTrain.driveDistance(distance, maxTimeOut);
+    drive.startPID(distance, maxTimeOut);
 
   }
 
   @Override
   protected boolean isFinished() {
     if (timeSinceInitialized() >= maxTimeOut
-        || Robot.driveTrain
-            .reachedTarget() || Robot.driveTrain.getError() < 1) {
+        || drive.reachedTarget() || drive.getError() < 1) {
       System.out.println("time: " + timeSinceInitialized());
-      Constants.DriveTrain.time = timeSinceInitialized();
+      C.Drive.time = timeSinceInitialized();
       return true;
     }
     return false;
@@ -55,10 +58,11 @@ public class DriveDistance extends Command {
 
   @Override
   protected void end() {
-    Robot.driveTrain.disable();
+    drive.disable();
   }
 
   @Override
   protected void interrupted() {
+    end();
   }
 }

@@ -1,17 +1,21 @@
 package org.usfirst.frc.team3501.robot.subsystems;
 
-import org.usfirst.frc.team3501.robot.Constants;
+import org.usfirst.frc.team3501.robot.C;
 import org.usfirst.frc.team3501.robot.GyroLib;
 import org.usfirst.frc.team3501.robot.MathLib;
+import org.usfirst.frc.team3501.robot.commands.JoystickDrive;
 
-import edu.wpi.first.wpilibj.CANTalon;
+import com.ctre.CANTalon;
+
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 
-public class PIDDriveTrain extends PIDSubsystem {
+public class DriveTrain extends PIDSubsystem {
+
+  private static DriveTrain instance;
   private static double pidOutput = 0;
   private static double encoderTolerance = 8.0, gyroTolerance = 5.0;
   private int DRIVE_MODE = 1;
@@ -24,28 +28,28 @@ public class PIDDriveTrain extends PIDSubsystem {
 
   private GyroLib gyro;
 
-  public PIDDriveTrain() {
+  public DriveTrain() {
     super(kp, ki, kd);
 
-    frontLeft = new CANTalon(Constants.DriveTrain.FRONT_LEFT);
-    frontRight = new CANTalon(Constants.DriveTrain.FRONT_RIGHT);
-    rearLeft = new CANTalon(Constants.DriveTrain.REAR_LEFT);
-    rearRight = new CANTalon(Constants.DriveTrain.REAR_RIGHT);
+    frontLeft = new CANTalon(C.Drive.FRONT_LEFT);
+    frontRight = new CANTalon(C.Drive.FRONT_RIGHT);
+    rearLeft = new CANTalon(C.Drive.REAR_LEFT);
+    rearRight = new CANTalon(C.Drive.REAR_RIGHT);
 
     robotDrive = new RobotDrive(frontLeft, rearLeft, frontRight, rearRight);
-    leftEncoder = new Encoder(Constants.DriveTrain.ENCODER_LEFT_A,
-        Constants.DriveTrain.ENCODER_LEFT_B, false, EncodingType.k4X);
-    rightEncoder = new Encoder(Constants.DriveTrain.ENCODER_RIGHT_A,
-        Constants.DriveTrain.ENCODER_RIGHT_B, false, EncodingType.k4X);
-    leftEncoder.setDistancePerPulse(Constants.DriveTrain.INCHES_PER_PULSE);
-    rightEncoder.setDistancePerPulse(Constants.DriveTrain.INCHES_PER_PULSE);
+    leftEncoder = new Encoder(C.Drive.ENCODER_LEFT_A,
+        C.Drive.ENCODER_LEFT_B, false, EncodingType.k4X);
+    rightEncoder = new Encoder(C.Drive.ENCODER_RIGHT_A,
+        C.Drive.ENCODER_RIGHT_B, false, EncodingType.k4X);
+    leftEncoder.setDistancePerPulse(C.Drive.INCHES_PER_PULSE);
+    rightEncoder.setDistancePerPulse(C.Drive.INCHES_PER_PULSE);
 
-    leftEncoder.setDistancePerPulse(Constants.DriveTrain.INCHES_PER_PULSE);
-    rightEncoder.setDistancePerPulse(Constants.DriveTrain.INCHES_PER_PULSE);
+    leftEncoder.setDistancePerPulse(C.Drive.INCHES_PER_PULSE);
+    rightEncoder.setDistancePerPulse(C.Drive.INCHES_PER_PULSE);
 
     gyro = new GyroLib(I2C.Port.kOnboard, false);
 
-    DRIVE_MODE = Constants.DriveTrain.ENCODER_MODE;
+    DRIVE_MODE = C.Drive.ENCODER_MODE;
     setEncoderPID();
     this.disable();
     gyro.start();
@@ -54,7 +58,15 @@ public class PIDDriveTrain extends PIDSubsystem {
 
   @Override
   protected void initDefaultCommand() {
-    // setDefaultCommand(new JoystickDrive());
+    setDefaultCommand(new JoystickDrive());
+  }
+
+  public static DriveTrain getInstance() {
+    if (DriveTrain.instance == null) {
+      DriveTrain.instance = new DriveTrain();
+    }
+    return DriveTrain.instance;
+
   }
 
   public void printOutput() {
@@ -104,8 +116,12 @@ public class PIDDriveTrain extends PIDSubsystem {
   }
 
   public double getError() {
-    if (DRIVE_MODE == Constants.DriveTrain.ENCODER_MODE)
+    if (DRIVE_MODE == C.Drive.ENCODER_MODE) {
+      System.out.println("setpoint: " + this.getSetpoint());
+      System.out.println("distance: " + this.getAvgEncoderDistance());
       return Math.abs(this.getSetpoint() - getAvgEncoderDistance());
+
+    }
     else
       return Math.abs(this.getSetpoint() + getGyroAngle());
   }
@@ -135,7 +151,7 @@ public class PIDDriveTrain extends PIDSubsystem {
   }
 
   public void updatePID() {
-    if (DRIVE_MODE == Constants.DriveTrain.ENCODER_MODE)
+    if (DRIVE_MODE == C.Drive.ENCODER_MODE)
       this.getPIDController().setPID(kp, ki, kd);
     else
       this.getPIDController().setPID(gp, gd, gi);
@@ -165,20 +181,18 @@ public class PIDDriveTrain extends PIDSubsystem {
   protected void usePIDOutput(double output) {
     double left = 0;
     double right = 0;
-    if (DRIVE_MODE == Constants.DriveTrain.ENCODER_MODE) {
+    if (DRIVE_MODE == C.Drive.ENCODER_MODE) {
       double drift = this.getLeftDistance() - this.getRightDistance();
       if (Math.abs(output) > 0 && Math.abs(output) < 0.3)
         output = Math.signum(output) * 0.3;
       left = output;
       right = output + drift * kp / 10;
     }
-    else if (DRIVE_MODE == Constants.DriveTrain.GYRO_MODE) {
-      left = output;
-      right = -output;
+    else if (DRIVE_MODE == C.Drive.GYRO_MODE) {
+      left = -output;
+      right = output;
     }
-    drive(left / 1.3, right / 1.3);
-    System.out.println("left: " + left);
-    System.out.println("right: " + right);
+    drive(-left, -right);
     pidOutput = output;
   }
 
@@ -202,14 +216,20 @@ public class PIDDriveTrain extends PIDSubsystem {
     // dunno why but inverted drive (- values is forward)
   }
 
-  public void driveDistance(double dist, double maxTimeOut) {
-    dist = MathLib.constrain(dist, -100, 100);
-    setEncoderPID();
-    setSetpoint(dist);
+  public void arcadeDrive(double thrust, double twist) {
+    robotDrive.arcadeDrive(thrust, twist);
+  }
+
+  public void startPID(double dist, double maxTimeOut) {
+    if (this.DRIVE_MODE == C.Drive.ENCODER_MODE) {
+      dist = MathLib.constrain(dist, -100, 100);
+      setEncoderPID();
+      setSetpoint(dist);
+    }
   }
 
   public void setEncoderPID() {
-    DRIVE_MODE = Constants.DriveTrain.ENCODER_MODE;
+    DRIVE_MODE = C.Drive.ENCODER_MODE;
     this.updatePID();
     this.setAbsoluteTolerance(encoderTolerance);
     this.setOutputRange(-1.0, 1.0);
@@ -218,7 +238,7 @@ public class PIDDriveTrain extends PIDSubsystem {
   }
 
   private void setGyroPID() {
-    DRIVE_MODE = Constants.DriveTrain.GYRO_MODE;
+    DRIVE_MODE = C.Drive.GYRO_MODE;
     this.updatePID();
     this.getPIDController().setPID(gp, gi, gd);
 
@@ -233,15 +253,6 @@ public class PIDDriveTrain extends PIDSubsystem {
     setSetpoint(angle);
   }
 
-  public void setMotorSpeeds(double left, double right) {
-    // positive setpoint to left side makes it go backwards
-    // positive setpoint to right side makes it go forwards.
-    frontLeft.set(-left);
-    rearLeft.set(-left);
-    frontRight.set(right);
-    rearRight.set(right);
-  }
-
-  private static double kp = 0.013, ki = 0.000015, kd = -0.002;
+  private static double kp = 0.008, ki = 0.000015, kd = -0.002;
   private static double gp = 0.018, gi = 0.000015, gd = 0;
 }
