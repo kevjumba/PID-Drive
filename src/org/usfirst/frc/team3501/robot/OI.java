@@ -8,12 +8,22 @@ import edu.wpi.first.wpilibj.buttons.Button;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
+  private static OI instance;
   public static Joystick leftJoystick;
   public static Joystick rightJoystick;
   public static Button trigger;
 
-  public OI() {
+  private OI() {
+
     leftJoystick = new Joystick(C.OI.LEFT_STICK_PORT);
     rightJoystick = new Joystick(C.OI.RIGHT_STICK_PORT);
+  }
+
+  public static OI getInstance() {
+    if (OI.instance == null) {
+      OI.instance = new OI();
+    }
+    return OI.instance;
+
   }
 }

@@ -70,7 +70,7 @@ public class TurnForAngle extends Command {
 
   @Override
   protected void end() {
-    System.out.println("END");
+    System.out.println("Turn Angle Command End");
     this.driveTrain.stop();
   }
 

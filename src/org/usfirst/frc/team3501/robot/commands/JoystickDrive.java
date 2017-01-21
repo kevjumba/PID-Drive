@@ -1,6 +1,7 @@
 package org.usfirst.frc.team3501.robot.commands;
 
-import org.usfirst.frc.team3501.robot.Robot;
+import org.usfirst.frc.team3501.robot.OI;
+import org.usfirst.frc.team3501.robot.subsystems.Drive;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -10,9 +11,11 @@ import edu.wpi.first.wpilibj.command.Command;
  * Never finishes until teleop ends
  */
 public class JoystickDrive extends Command {
+  private Drive driveTrain;
 
   public JoystickDrive() {
-    requires(Robot.driveTrain);
+    driveTrain = Drive.getInstance();
+    requires(driveTrain);
   }
 
   @Override
@@ -21,10 +24,9 @@ public class JoystickDrive extends Command {
 
   @Override
   protected void execute() {
-    // IDK why but the joystick gives positive values for pulling backwards
-    double thrust = Robot.oi.rightJoystick.getY();
-    double twist = Robot.oi.rightJoystick.getTwist();
-    Robot.driveTrain.arcadeDrive(-thrust, -twist);
+    double thrust = OI.rightJoystick.getY();
+    double twist = OI.rightJoystick.getTwist();
+    driveTrain.arcadeDrive(-thrust, -twist);
   }
 
   @Override
@@ -34,7 +36,7 @@ public class JoystickDrive extends Command {
 
   @Override
   protected void end() {
-    Robot.driveTrain.stop();
+    driveTrain.stop();
   }
 
   @Override

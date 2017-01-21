@@ -1,7 +1,6 @@
 package org.usfirst.frc.team3501.robot.commands;
 
 import org.usfirst.frc.team3501.robot.C;
-import org.usfirst.frc.team3501.robot.Robot;
 import org.usfirst.frc.team3501.robot.subsystems.Drive;
 import org.usfirst.frc.team3501.robot.utils.Lib;
 import org.usfirst.frc.team3501.robot.utils.PID;
@@ -10,7 +9,7 @@ import edu.wpi.first.wpilibj.command.Command;
 
 public class DriveStraight extends Command {
   private double maxTimeOut;
-  private Drive drive;
+  private Drive driveTrain;
   private PID encControl;
   private PID gyroControl;
 
@@ -26,8 +25,8 @@ public class DriveStraight extends Command {
   private double encEps;
 
   public DriveStraight(double distance, double maxTimeOut) {
-    requires(Robot.driveTrain);
-    drive = Drive.getInstance();
+    driveTrain = Drive.getInstance();
+    requires(driveTrain);
     this.maxTimeOut = maxTimeOut;
     this.target = distance;
 
@@ -51,39 +50,40 @@ public class DriveStraight extends Command {
 
   @Override
   protected void initialize() {
-    this.drive.resetEncoders();
-    this.drive.resetGyro();
+    this.driveTrain.resetEncoders();
+    this.driveTrain.resetGyro();
     this.encControl.setDesiredValue(this.target);
-    this.gyroControl.setDesiredValue(this.drive.getZero());
+    this.gyroControl.setDesiredValue(this.driveTrain.getZero());
 
   }
 
   @Override
   protected void execute() {
     double xVal = 0;
-    double yVal = this.encControl.calcPID(this.drive.getEncoderDistance());
-    if (this.drive.getAngle()
-        - this.drive.getZero() < 30) {
-      xVal = -this.gyroControl.calcPID(this.drive.getAngle()
-          - this.drive.getZero());
+    double yVal = this.encControl.calcPID(this.driveTrain.getEncoderDistance());
+    if (this.driveTrain.getAngle()
+        - this.driveTrain.getZero() < 30) {
+      xVal = -this.gyroControl.calcPID(this.driveTrain.getAngle()
+          - this.driveTrain.getZero());
     }
     double leftDrive = Lib.calcLeftTankDrive(-xVal, yVal);
     double rightDrive = Lib.calcRightTankDrive(xVal, -yVal);
 
-    this.drive.setDriveLeft(leftDrive);
-    this.drive.setDriveRight(rightDrive);
+    this.driveTrain.setDriveLeft(leftDrive);
+    this.driveTrain.setDriveRight(rightDrive);
 
   }
 
   @Override
   protected boolean isFinished() {
-    return this.encControl.isDone();
+    return timeSinceInitialized() >= maxTimeOut
+        || this.encControl.isDone();
   }
 
   @Override
   protected void end() {
-    this.drive.stop();
-    System.out.println("Drive Straight has Stopped");
+    System.out.println("Drive Straight Command End");
+    this.driveTrain.stop();
   }
 
   @Override

@@ -13,15 +13,12 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Drive extends Subsystem {
-  private static double pidOutput = 0;
   private static Drive instance;
-  private int DRIVE_MODE = 1;
 
   private Encoder leftEncoder, rightEncoder;
   private CANTalon frontLeft, frontRight, rearLeft, rearRight;
   private RobotDrive robotDrive;
 
-  // private GyroLib gyro;
   private BNO055 imu;
 
   private double gyroZero = 0;
@@ -44,14 +41,9 @@ public class Drive extends Subsystem {
     leftEncoder.setDistancePerPulse(C.Drive.INCHES_PER_PULSE);
     rightEncoder.setDistancePerPulse(C.Drive.INCHES_PER_PULSE);
 
-    // gyro = new GyroLib(I2C.Port.kOnboard, false);
-
     this.imu = BNO055.getInstance(BNO055.opmode_t.OPERATION_MODE_IMUPLUS,
         BNO055.vector_type_t.VECTOR_EULER, Port.kOnboard, (byte) 0x28);
-    // System.out.println("IMU is " + this.imu.isSensorPresent());
     gyroZero = imu.getHeading();
-
-    // gyro.start();
 
   }
 
@@ -68,9 +60,11 @@ public class Drive extends Subsystem {
     setDefaultCommand(new JoystickDrive());
   }
 
-  public void printOutput() {
-    System.out.println("PIDOutput: " + pidOutput);
-  }
+  // -----------------------------------------------------
+  // ---- Component Specific Methods ---------------------
+  // -----------------------------------------------------
+
+  // ----------------- Encoders ------------------------------
 
   public double getEncoderDistance() {
     return (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2;
@@ -101,16 +95,24 @@ public class Drive extends Subsystem {
     return leftEncoder.getDistance(); // in inches
   }
 
-  // public double getAngle() {
-  // return gyro.getRotationZ().getAngle();
-  // }
+  // ----------------- Gyro ------------------------------
 
   public double getAngle() {
     if (!this.imu.isInitialized())
       return -1;
     return this.imu.getHeading() - this.gyroZero;
-    // return this.imu.getHeading() - this.gyroZero;
   }
+
+  public void resetGyro() {
+    this.gyroZero = this.getAngle();
+
+  }
+
+  public double getZero() {
+    return this.gyroZero;
+  }
+
+  // ----------------- Drive ------------------------------
 
   public void setDriveLeft(double leftDrive) {
     this.frontLeft.set(leftDrive);
@@ -130,15 +132,6 @@ public class Drive extends Subsystem {
   public void stop() {
     setDriveLeft(0.0);
     setDriveRight(0.0);
-  }
-
-  public void resetGyro() {
-    this.gyroZero = this.getAngle();
-
-  }
-
-  public double getZero() {
-    return this.gyroZero;
   }
 
 }

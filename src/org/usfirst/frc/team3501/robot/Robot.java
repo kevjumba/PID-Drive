@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 public class Robot extends IterativeRobot {
 
   public static Drive driveTrain;
-  public static OI oi;
   int count = 0;
 
   /**
@@ -26,7 +25,6 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void robotInit() {
-    oi = new OI();
     driveTrain = Drive.getInstance();
 
   }
