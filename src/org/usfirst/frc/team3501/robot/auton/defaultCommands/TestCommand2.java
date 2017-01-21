@@ -1,16 +1,16 @@
-package org.usfirst.frc.team3501.robot.auton;
+package org.usfirst.frc.team3501.robot.auton.defaultCommands;
 
 import edu.wpi.first.wpilibj.command.Command;
 
-public class DefaultCommand extends Command {
+public class TestCommand2 extends Command {
 
-  public DefaultCommand() {
+  public TestCommand2() {
 
   }
 
   @Override
   protected void initialize() {
-    System.out.println("Default Command Startup Successful");
+    System.out.println("Test Command 2 Startup Successful");
   }
 
   @Override
@@ -20,7 +20,7 @@ public class DefaultCommand extends Command {
 
   @Override
   protected void end() {
-    System.out.println("Default Command End");
+    System.out.println("Test Command 2 End");
   }
 
   @Override

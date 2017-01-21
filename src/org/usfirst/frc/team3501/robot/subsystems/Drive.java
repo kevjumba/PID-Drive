@@ -1,7 +1,7 @@
 package org.usfirst.frc.team3501.robot.subsystems;
 
 import org.usfirst.frc.team3501.robot.C;
-import org.usfirst.frc.team3501.robot.auton.JoystickDrive;
+import org.usfirst.frc.team3501.robot.auton.drive.JoystickDrive;
 import org.usfirst.frc.team3501.robot.utils.BNO055;
 
 import com.ctre.CANTalon;

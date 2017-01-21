@@ -1,6 +1,6 @@
 package org.usfirst.frc.team3501.robot;
 
-import org.usfirst.frc.team3501.robot.auton.DefaultCommand;
+import org.usfirst.frc.team3501.robot.auton.defaultCommands.DefaultCommand;
 import org.usfirst.frc.team3501.robot.subsystems.Drive;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -79,7 +79,6 @@ public class Robot extends IterativeRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    // System.out.println("Angle: " + driveTrain.getAngle());
 
   }
 
