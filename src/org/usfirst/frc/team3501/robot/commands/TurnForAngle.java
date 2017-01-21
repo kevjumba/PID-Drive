@@ -1,12 +1,12 @@
 package org.usfirst.frc.team3501.robot.commands;
 
 import org.usfirst.frc.team3501.robot.C;
-import org.usfirst.frc.team3501.robot.Robot;
 import org.usfirst.frc.team3501.robot.subsystems.Drive;
 import org.usfirst.frc.team3501.robot.utils.Lib;
 import org.usfirst.frc.team3501.robot.utils.PID;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /***
  * @param targetAngle
@@ -19,16 +19,23 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class TurnForAngle extends Command {
   private PID gyroControl;
+  private Drive driveTrain;
+
   private double epsilon;
   private double maxTimeOut;
   private double targetAngle;
-  private Drive driveTrain;
+
+  private double gyroP, gyroI, gyroD;
 
   public TurnForAngle(double angle, double maxTimeOut) {
-    requires(Robot.driveTrain);
+    requires(this.driveTrain);
     epsilon = 3; // 3 degrees of freedom
-    driveTrain = Drive.getInstance();
-    this.gyroControl = new PID(C.Drive.gp, C.Drive.gi, C.Drive.gd, 3.0);
+    this.driveTrain = Drive.getInstance();
+    this.epsilon = 3.0;
+    this.gyroP = SmartDashboard.getNumber("DB/Slider 0", C.Drive.gp);
+    this.gyroI = SmartDashboard.getNumber("DB/Slider 1", C.Drive.gi);
+    this.gyroD = SmartDashboard.getNumber("DB/Slider 2", C.Drive.gd);
+    this.gyroControl = new PID(gyroP, gyroI, gyroD, this.epsilon);
     this.gyroControl.setMaxOutput(1.0);
     this.maxTimeOut = maxTimeOut;
     this.targetAngle = angle;
@@ -36,15 +43,13 @@ public class TurnForAngle extends Command {
 
   @Override
   protected void initialize() {
-    Robot.driveTrain.resetGyro();
+    driveTrain.resetGyro();
     this.gyroControl.setDesiredValue(this.targetAngle
         + this.driveTrain.getAngle());
   }
 
   @Override
   protected void execute() {
-    // Robot.driveTrain.printGyroOutput();
-    // Robot.driveTrain.printOutput();
     double xVal = -this.gyroControl.calcPID(this.driveTrain.getAngle());
     double leftDrive = Lib.calcLeftTankDrive(xVal, 0.0);
     double rightDrive = Lib.calcRightTankDrive(xVal, 0.0);
