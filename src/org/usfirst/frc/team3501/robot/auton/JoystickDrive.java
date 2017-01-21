@@ -1,4 +1,4 @@
-package org.usfirst.frc.team3501.robot.commands;
+package org.usfirst.frc.team3501.robot.auton;
 
 import org.usfirst.frc.team3501.robot.OI;
 import org.usfirst.frc.team3501.robot.subsystems.Drive;

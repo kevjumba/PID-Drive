@@ -1,39 +1,50 @@
 package org.usfirst.frc.team3501.robot;
 
-import org.usfirst.frc.team3501.robot.commands.DriveStraight;
+import org.usfirst.frc.team3501.robot.auton.DefaultCommand;
 import org.usfirst.frc.team3501.robot.subsystems.Drive;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the IterativeRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
- */
 public class Robot extends IterativeRobot {
 
   public static Drive driveTrain;
-  int count = 0;
+  public static Preferences prefs;
+  public static SendableChooser<Command> step1;
+  public static SendableChooser<Command> step2;
 
-  /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
-   */
   @Override
   public void robotInit() {
     driveTrain = Drive.getInstance();
+    prefs = Preferences.getInstance();
+    step1 = new SendableChooser<>();
+    step2 = new SendableChooser<>();
+    addAutonChooser();
+    runSelectedAuton();
 
   }
 
-  /**
-   * This function is called once each time the robot enters Disabled mode.
-   * You can use it to reset any subsystem information you want to clear when
-   * the robot is disabled.
-   */
+  private void runSelectedAuton() {
+    Command firstCommand = step1.getSelected();
+    Command secondCommand = step2.getSelected();
+    Scheduler.getInstance().add(firstCommand);
+    Scheduler.getInstance().add(secondCommand);
+  }
+
+  private void addAutonChooser() {
+    step1.addDefault("Default", new DefaultCommand());
+    // add step1 commands
+    step2.addDefault("Default", new DefaultCommand());
+    // add step2 commands
+    SmartDashboard.putData("Step1 Chooser", step1);
+    SmartDashboard.putData("Step2 Chooser", step2);
+  }
+
   @Override
   public void disabledInit() {
 
@@ -46,22 +57,18 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void autonomousInit() {
+    Scheduler.getInstance().run();
     // Scheduler.getInstance().add(new DriveDistance(50, 10));
     // System.out.println(this.driveTrain.getRightDistance());
-    Scheduler.getInstance().add(new DriveStraight(100, 10));
+    // Scheduler.getInstance().add(new DriveStraight(100, 10));
     // Scheduler.getInstance().add(
     // new TurnForAngle(-(360 + this.driveTrain.getAngle()), 6));
+
   }
 
-  /**
-   * This function is called periodically during autonomous
-   */
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
-    // System.out.println(this.driveTrain.getAngle());
-    System.out.println("l:" + this.driveTrain.getLeftDistance() + " r:"
-        + this.driveTrain.getRightDistance());
 
   }
 
@@ -69,9 +76,6 @@ public class Robot extends IterativeRobot {
   public void teleopInit() {
   }
 
-  /**
-   * This function is called periodically during operator control
-   */
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
@@ -79,9 +83,6 @@ public class Robot extends IterativeRobot {
 
   }
 
-  /**
-   * This function is called periodically during test mode
-   */
   @Override
   public void testPeriodic() {
     LiveWindow.run();

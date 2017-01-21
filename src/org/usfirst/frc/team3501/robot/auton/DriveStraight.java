@@ -1,10 +1,11 @@
-package org.usfirst.frc.team3501.robot.commands;
+package org.usfirst.frc.team3501.robot.auton;
 
 import org.usfirst.frc.team3501.robot.C;
 import org.usfirst.frc.team3501.robot.subsystems.Drive;
 import org.usfirst.frc.team3501.robot.utils.Lib;
 import org.usfirst.frc.team3501.robot.utils.PID;
 
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class DriveStraight extends Command {
@@ -12,17 +13,16 @@ public class DriveStraight extends Command {
   private Drive driveTrain;
   private PID encControl;
   private PID gyroControl;
+  private Preferences prefs;
 
   private double target;
   private double gyroP;
   private double gyroI;
   private double gyroD;
-  private double gyroEps;
 
   private double encP;
   private double encI;
   private double encD;
-  private double encEps;
 
   public DriveStraight(double distance, double maxTimeOut) {
     driveTrain = Drive.getInstance();
@@ -30,20 +30,18 @@ public class DriveStraight extends Command {
     this.maxTimeOut = maxTimeOut;
     this.target = distance;
 
-    this.encP = C.Drive.kp;
-    this.encI = C.Drive.ki;
-    this.encD = C.Drive.kd;
-    this.gyroP = 0.0009;
-    this.gyroI = 0.0000;
-    this.gyroD = -0.0000;
-    this.gyroEps = 5;
+    this.encP = prefs.getDouble("DriveP", C.Drive.kp);
+    this.encI = prefs.getDouble("DriveI", C.Drive.ki);
+    this.encD = prefs.getDouble("DriveD", C.Drive.kd);
+    this.gyroP = prefs.getDouble("DriveP", 0.0009);
+    this.gyroI = prefs.getDouble("DriveI", 0.0000);
+    this.gyroD = prefs.getDouble("DriveD", -0.000);
     this.encControl = new PID(this.encP, this.encI, this.encD);
     this.encControl.setDoneRange(0.5);
     this.encControl.setMaxOutput(1.0);
     this.encControl.setMinDoneCycles(5);
 
-    this.gyroControl = new PID(this.gyroP, this.gyroI, this.gyroD,
-        this.gyroEps);
+    this.gyroControl = new PID(this.gyroP, this.gyroI, this.gyroD);
     this.gyroControl.setDoneRange(1);
     this.gyroControl.setMinDoneCycles(5);
   }
