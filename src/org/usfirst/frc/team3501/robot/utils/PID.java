@@ -4,9 +4,8 @@
  */
 package org.usfirst.frc.team3501.robot.utils;
 
-/**
- *
- * @author Mike
+/*
+ * credits to 1114 for inspiration
  */
 public class PID {
 

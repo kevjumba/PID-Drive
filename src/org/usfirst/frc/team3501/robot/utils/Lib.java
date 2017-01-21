@@ -4,10 +4,6 @@
  */
 package org.usfirst.frc.team3501.robot.utils;
 
-/**
- *
- * @author Mike
- */
 public class Lib {
     
     public static double limitValue(double val) {
