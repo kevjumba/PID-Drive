@@ -1,4 +1,4 @@
-package org.usfirst.frc.team3501.robot;
+package org.usfirst.frc.team3501.robot.utils;
 
 public class MathLib {
 

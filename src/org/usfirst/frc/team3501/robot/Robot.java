@@ -65,11 +65,6 @@ public class Robot extends IterativeRobot {
   @Override
   public void autonomousInit() {
     Scheduler.getInstance().run();
-    // Scheduler.getInstance().add(new DriveDistance(50, 10));
-    // System.out.println(this.driveTrain.getRightDistance());
-    // Scheduler.getInstance().add(new DriveStraight(100, 10));
-    // Scheduler.getInstance().add(
-    // new TurnForAngle(-(360 + this.driveTrain.getAngle()), 6));
 
   }
 
