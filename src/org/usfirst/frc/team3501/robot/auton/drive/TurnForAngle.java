@@ -32,9 +32,9 @@ public class TurnForAngle extends Command {
     epsilon = 3; // 3 degrees of freedom
     this.driveTrain = Drive.getInstance();
     this.epsilon = 3.0;
-    this.gyroP = SmartDashboard.getNumber("DB/Slider 0", C.Drive.gp);
-    this.gyroI = SmartDashboard.getNumber("DB/Slider 1", C.Drive.gi);
-    this.gyroD = SmartDashboard.getNumber("DB/Slider 2", C.Drive.gd);
+    this.gyroP = SmartDashboard.getNumber("DB/Slider 0", C.Drive.defaultGyroP);
+    this.gyroI = SmartDashboard.getNumber("DB/Slider 1", C.Drive.defaultGyroI);
+    this.gyroD = SmartDashboard.getNumber("DB/Slider 2", C.Drive.defaultGyroD);
     this.gyroControl = new PID(gyroP, gyroI, gyroD, this.epsilon);
     this.gyroControl.setMaxOutput(1.0);
     this.maxTimeOut = maxTimeOut;

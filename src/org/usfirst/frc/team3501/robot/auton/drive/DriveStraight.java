@@ -30,9 +30,9 @@ public class DriveStraight extends Command {
     this.maxTimeOut = maxTimeOut;
     this.target = distance;
 
-    this.encP = prefs.getDouble("DriveP", C.Drive.kp);
-    this.encI = prefs.getDouble("DriveI", C.Drive.ki);
-    this.encD = prefs.getDouble("DriveD", C.Drive.kd);
+    this.encP = prefs.getDouble("DriveP", C.Drive.defaultEncP);
+    this.encI = prefs.getDouble("DriveI", C.Drive.defaultEncI);
+    this.encD = prefs.getDouble("DriveD", C.Drive.defaultEncD);
     this.gyroP = prefs.getDouble("DriveP", 0.0009);
     this.gyroI = prefs.getDouble("DriveI", 0.0000);
     this.gyroD = prefs.getDouble("DriveD", -0.000);
